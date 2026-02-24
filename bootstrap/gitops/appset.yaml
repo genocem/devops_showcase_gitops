@@ -34,8 +34,8 @@ spec:
     spec:
       project: default
       source:
-        repoURL: https://gitlab.com/AhmedKacemTN/argocd_kubernetes.git
-        targetRevision: devops
+        repoURL: https://github.com/genocem/devops_showcase_gitops.git
+        targetRevision: main
         path: '{{chartPath}}'
         helm:
           valueFiles:
