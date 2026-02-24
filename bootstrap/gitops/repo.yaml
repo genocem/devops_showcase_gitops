@@ -6,5 +6,5 @@ metadata:
   labels:
     argocd.argoproj.io/secret-type: repository
 stringData:
-  url: https://gitlab.com/AhmedKacemTN/argocd_kubernetes.git
+  url: https://github.com/genocem/devops_showcase_gitops.git
   type: git
