@@ -1,0 +1,20 @@
+{{- if .Values.service.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.service.name | default .Values.appName }}
+  labels:
+    app: {{ .Values.service.name | default .Values.appName }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    # Selector must match the Deployment's pod labels
+    app: {{ .Values.deployment.name | default .Values.appName }}
+  ports:
+    {{- range .Values.service.ports }}
+    - name: {{ .name }}
+      port: {{ .port }}
+      protocol: TCP
+      targetPort: {{ .targetPort }}
+    {{- end }}
+{{- end }}

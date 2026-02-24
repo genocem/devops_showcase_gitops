@@ -1,0 +1,22 @@
+{{- if .Values.ingressRoute.enabled }}
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  # Use specific name if provided, otherwise fall back to appName
+  name: {{ .Values.ingressRoute.name | default .Values.appName }}
+  namespace: {{ .Values.ingressRoute.namespace | default .Release.Namespace }}
+spec:
+  entryPoints:
+    {{- toYaml .Values.ingressRoute.entryPoints | nindent 4 }}
+  routes:
+    - kind: Rule
+      match: Host(`{{ .Values.ingressRoute.host }}`) && PathPrefix(`{{ .Values.ingressRoute.pathPrefix }}`)
+      services:
+        # Use specific service name if provided, otherwise fall back to appName
+        - name: {{ .Values.ingressRoute.service.name | default .Values.appName }}
+          port: {{ .Values.ingressRoute.service.port }}
+  {{- if .Values.ingressRoute.tls.enabled }}
+  tls:
+    secretName: {{ .Values.ingressRoute.tls.secretName }}
+  {{- end }}
+{{- end }}

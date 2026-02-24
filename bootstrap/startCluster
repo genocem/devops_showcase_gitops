@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -e
+
+notify() {
+  if [ $? -eq 0 ]; then
+    notify-send "Cluster Bootstrap" "Succeeded"
+  else
+    notify-send "Cluster Bootstrap" "Failed"
+  fi
+}
+
+trap notify EXIT
+
+./cert_manager/apply.bash
+./traefik/apply.bash
+./monitoring/apply.bash
+./dbs/apply.bash
+./gitops/apply.bash

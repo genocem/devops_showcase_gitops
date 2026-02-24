@@ -1,0 +1,62 @@
+appName: cart-worker
+
+deployment:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: stagemicroservices.azurecr.io/devops_showcase_cart_service
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  secretName: default-certificate-secret
+
+  command: ["celery"]
+  args: ["-A", "celery_app", "worker", "-n", "cart_worker", "--loglevel=info", "-Q", "cart_queue"]
+
+  containerPorts: []
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  readinessProbe: {}
+  livenessProbe: {}
+
+  runAsUser: 1000
+  fsGroup: 1000
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+
+service:
+  enabled: false
+
+secrets:
+  _isFrontend: false
+  _isFlaskApp: true
+  _isCartService: true
+
+  flask:
+    FLASK_APP: "run.py"
+    FLASK_ENV: "developmenti"
+    SECRET_KEY: "e4477fa72ebffc7b409f23fcddf68bae28d6ac511b043320"
+    MONGODB_DB: "devopsshowcase"
+    MONGODB_HOST: "mongodb"
+    MONGODB_PORT: "27017"
+    MONGODB_USERNAME: "genocemuser"
+    MONGODB_PASSWORD: "123passwordSecret123"
+    MONGODB_AUTH_SOURCE: "devopsshowcase"
+    JWT_SECRET_KEY: "LYPdleBPqCxLBZCds49LdGfUzPuA1OXA_xq4XZHniRI"
+    SESSION_COOKIE_SECURE: true
+    SESSION_COOKIE_HTTPONLY: true
+    SESSION_COOKIE_SAMESITE: Lax
+    CELERY_BROKER_HOST: redis
+    CELERY_BROKER_PORT: 6379
+  cart:
+    STOCK_SERVICE_INTERNAL_URL: "http://stock-service:5000"

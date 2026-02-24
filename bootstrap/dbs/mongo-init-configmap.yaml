@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongo-init
+  namespace: default
+data:
+  mongo-init.js: |
+    const dbName = process.env.MONGODB_DB;
+    const user = process.env.MONGODB_USERNAME;
+    const pwd = process.env.MONGODB_PASSWORD;
+
+    db = db.getSiblingDB(dbName);
+
+    db.createUser({
+      user: user,
+      pwd: pwd,
+      roles: [{ role: "readWrite", db: dbName }]
+    });

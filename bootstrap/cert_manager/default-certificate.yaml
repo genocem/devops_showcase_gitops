@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: default-certificate
+  namespace: default
+spec:
+  secretName: default-certificate-secret
+  issuerRef:
+    name: cloudflare-issuer
+    kind: ClusterIssuer
+  dnsNames:
+    - '*.ahmedkacemstage.me'
+    - ahmedkacemstage.me

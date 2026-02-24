@@ -1,0 +1,72 @@
+appName: reclamation
+
+deployment:
+  enabled: false
+  replicaCount: 1
+  image:
+    repository: nginx
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  secretName: default-certificate-secret
+
+  # Runtime overrides
+  command: [] # e.g. ["flask"] or ["celery"]
+  args: []    # e.g. ["run", "--host=0.0.0.0"] or ["-A","celery_app","worker","-n","stock_worker","--loglevel=info","-Q","stock_queue"]
+
+  containerPorts:
+    - containerPort: 5000
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  # readinessProbe:
+  #   httpGet:
+  #     path: /health
+  #     port: 5000
+  #   initialDelaySeconds: 5
+  #   periodSeconds: 10
+  #   timeoutSeconds: 2
+  #   failureThreshold: 3
+
+  # livenessProbe:
+  #   httpGet:
+  #     path: /health
+  #     port: 5000
+  #   initialDelaySeconds: 15
+  #   periodSeconds: 20
+  #   timeoutSeconds: 2
+  #   failureThreshold: 5
+
+  runAsUser: 1000
+  fsGroup: 1000
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+
+service:
+  enabled: false
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: 5000
+
+ingressRoute:
+  enabled: false
+  entryPoints:
+    - websecure
+  host: ahmedkacemstage.me
+  pathPrefix: /reclamation
+  service:
+    port: 80
+  tls:
+    enabled: false
+    secretName: default-certificate-secret

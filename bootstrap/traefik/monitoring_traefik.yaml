@@ -1,0 +1,26 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: promstack-grafana
+  namespace: monitoring
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`monitoring.ahmedkacemstage.me`)
+      priority: 10
+      services:
+        - name: promstack-grafana
+          port: 80
+    - kind: Rule
+      match: Host(`monitoring.ahmedkacemstage.me`) && Header(`Content-Type`, `application/grpc`)
+      priority: 11
+      services:
+        - name: promstack-grafana
+          port: 80
+          scheme: h2c
+  tls:
+    secretName: monitoring-certificate-secret
+
+

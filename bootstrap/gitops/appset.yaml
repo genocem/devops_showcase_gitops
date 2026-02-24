@@ -1,0 +1,45 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: helm-apps
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - name: cart-service
+            chartPath: charts/generic_chart
+            valuesFile: microservice_values/cart/cart_service_values.yaml
+          - name: cart-worker
+            chartPath: charts/generic_chart
+            valuesFile: microservice_values/cart/cart_worker_values.yaml
+          - name: frontend
+            chartPath: charts/generic_chart
+            valuesFile: microservice_values/frontend/frontend_values.yaml
+          - name: stock-service
+            chartPath: charts/generic_chart
+            valuesFile: microservice_values/stock/stock_service_values.yaml
+          - name: stock-worker
+            chartPath: charts/generic_chart
+            valuesFile: microservice_values/stock/stock_worker_values.yaml
+          - name: transaction-service
+            chartPath: charts/generic_chart
+            valuesFile: microservice_values/transaction/transaction_service_values.yaml
+          - name: transaction-worker
+            chartPath: charts/generic_chart
+            valuesFile: microservice_values/transaction/transaction_worker_values.yaml
+  template:
+    metadata:
+      name: '{{name}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://gitlab.com/AhmedKacemTN/argocd_kubernetes.git
+        targetRevision: devops
+        path: '{{chartPath}}'
+        helm:
+          valueFiles:
+            - '{{valuesFile}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: default

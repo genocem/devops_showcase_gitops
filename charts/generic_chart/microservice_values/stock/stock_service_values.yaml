@@ -1,0 +1,84 @@
+appName: stock-service
+
+deployment:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: stagemicroservices.azurecr.io/devops_showcase_stock_service
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  secretName: default-certificate-secret
+
+  command: ["flask"]
+  args: ["run", "--host=0.0.0.0"]
+
+  containerPorts:
+    - containerPort: 5000
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  # readinessProbe:
+  #   httpGet:
+  #     path: /health
+  #     port: 5000
+  #   initialDelaySeconds: 5
+  #   periodSeconds: 10
+  #   timeoutSeconds: 2
+  #   failureThreshold: 3
+
+  # livenessProbe:
+  #   httpGet:
+  #     path: /health
+  #     port: 5000
+  #   initialDelaySeconds: 15
+  #   periodSeconds: 20
+  #   timeoutSeconds: 2
+  #   failureThreshold: 5
+
+  runAsUser: 1000
+  fsGroup: 1000
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+
+service:
+  enabled: true
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 5000
+      targetPort: 5000
+
+ingressRoute:
+  enabled: false
+
+
+secrets:
+  _isFrontend: false
+  _isFlaskApp: true
+  _isCartService: false
+
+  flask:
+    FLASK_APP: "run.py"
+    FLASK_ENV: "developmenti"
+    SECRET_KEY: "5ee705819957f3b03295b6f2a82a98df7c03924e10e24bd0"
+    MONGODB_DB: "devopsshowcase"
+    MONGODB_HOST: "mongodb"
+    MONGODB_PORT: "27017"
+    MONGODB_USERNAME: "genocemuser"
+    MONGODB_PASSWORD: "123passwordSecret123"
+    MONGODB_AUTH_SOURCE: "devopsshowcase"
+    SESSION_COOKIE_SECURE: true
+    SESSION_COOKIE_HTTPONLY: true
+    SESSION_COOKIE_SAMESITE: Lax
+    CELERY_BROKER_HOST: redis
+    CELERY_BROKER_PORT: 6379

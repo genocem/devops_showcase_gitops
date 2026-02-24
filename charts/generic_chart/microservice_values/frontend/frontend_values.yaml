@@ -1,0 +1,82 @@
+appName: frontend
+
+deployment:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: stagemicroservices.azurecr.io/devops_showcase_frontend
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  secretName: default-certificate-secret
+
+  command: ["node"]
+  args: ["server.js"]
+
+  containerPorts:
+    - containerPort: 3000
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 3000
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 2
+    failureThreshold: 3
+
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 3000
+    initialDelaySeconds: 15
+    periodSeconds: 20
+    timeoutSeconds: 2
+    failureThreshold: 5
+
+  runAsUser: 1000
+  fsGroup: 1000
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+
+service:
+  enabled: true
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+
+ingressRoute:
+  enabled: true
+  entryPoints:
+    - websecure
+  host: ahmedkacemstage.me
+  pathPrefix: /
+  service:
+    port: 3000
+  tls:
+    enabled: true
+    secretName: default-certificate-secret
+
+
+secrets:
+  _isFrontend: true
+  _isFlaskApp: false
+  _isCartService: false
+
+  frontend:
+    STOCK_SERVICE_URL: "http://stock-service:5000/api/stocks"
+    CART_SERVICE_URL: "http://cart-service:5000/api/carts"
+    TRANSACTION_SERVICE_URL: "http://transaction-service:5000/api/transactions"

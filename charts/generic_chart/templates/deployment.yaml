@@ -1,0 +1,51 @@
+{{- if .Values.deployment.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deployment.name | default .Values.appName }}
+  labels:
+    app: {{ .Values.deployment.name | default .Values.appName }}
+spec:
+  replicas: {{ .Values.deployment.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.deployment.name | default .Values.appName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.deployment.name | default .Values.appName }}
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: {{ .Values.deployment.runAsUser | default 1000 }}
+        fsGroup: {{ .Values.deployment.fsGroup | default 1000 }}
+      containers:
+        - name: {{ .Values.deployment.name | default .Values.appName }}
+          image: "{{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag }}"
+          imagePullPolicy: {{ .Values.deployment.image.pullPolicy }}
+          {{- if .Values.deployment.command }}
+          command:
+            {{- toYaml .Values.deployment.command | nindent 12 }}
+          {{- end }}
+          {{- if .Values.deployment.args }}
+          args:
+            {{- toYaml .Values.deployment.args | nindent 12 }}
+          {{- end }}
+          {{- if .Values.deployment.containerPorts }}
+          ports:
+            {{- toYaml .Values.deployment.containerPorts | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.deployment.resources | nindent 12 }}
+          {{- if .Values.deployment.readinessProbe }}
+          readinessProbe:
+            {{- toYaml .Values.deployment.readinessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.deployment.livenessProbe }}
+          livenessProbe:
+            {{- toYaml .Values.deployment.livenessProbe | nindent 12 }}
+          {{- end }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.appName }}-secrets
+{{- end }}
