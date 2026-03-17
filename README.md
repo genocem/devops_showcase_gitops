@@ -2,9 +2,6 @@
 
 Kubernetes manifests and GitOps configurations for deploying the application using ArgoCD.
 
-## Architecture Diagram
-
-<!-- TODO: Add architecture diagram showing GitOps workflow -->
 
 ## Structure
 
@@ -82,9 +79,6 @@ Reusable chart for all microservices with:
 3. Kubernetes state updated
 4. Health check verification
 
-## GitOps Flow Diagram
-
-<!-- TODO: Add diagram showing the GitOps sync workflow -->
 
 ## License
 
