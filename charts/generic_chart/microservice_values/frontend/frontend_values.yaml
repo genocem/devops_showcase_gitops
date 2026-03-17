@@ -5,7 +5,7 @@ deployment:
   replicaCount: 1
   image:
     repository: stagemicroservices.azurecr.io/devops_showcase_frontend
-    tag: "4"
+    tag: "5"
     pullPolicy: IfNotPresent
   secretName: default-certificate-secret
 
