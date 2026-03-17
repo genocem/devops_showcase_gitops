@@ -52,10 +52,6 @@ Deploys: cert-manager, Traefik, Monitoring, Databases, ArgoCD
 ./gitops/apply.bash
 ```
 
-## Cluster Components Diagram
-
-<!-- TODO: Add diagram showing cluster components and their relationships -->
-
 ## Generic Helm Chart
 
 Reusable chart for all microservices with:
